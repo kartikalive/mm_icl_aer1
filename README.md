@@ -1,5 +1,6 @@
-# mm_icl_aer1
+# Project Name
 
-Mining Mind version 2.0
-Information Curation Layer
+Mining Mind version 2.0__
+Information Curation Layer__
+Low Level Context Awareness__
 Audio based Emotion Recognition
