@@ -10,12 +10,13 @@ import mm.icl.llc.LLC.Emotion;
 import mm.icl.llc.sensorydata.SensoryData;
 
 public class AER_Server {
-	public static final String[] LABELS = {"ANGER", "HAPPINESS", "SADNESS", "NEUTRAL"};
-
+	
 	public static void main(String[] args) throws IOException {
 		int n = 0;
 		ServerSocket listener = new ServerSocket(9090);
         try {
+        	System.out.println("Server is running.");
+        	
             while (true) {
                 Socket s = listener.accept();
                 try {
@@ -47,31 +48,12 @@ public class AER_Server {
 		public AERThread(String name, double[] samples) {
 			this.samples = samples;
 		    this.threadName = name;
-		    System.out.println("Creating " +  threadName);
 		}
 		   
 		public void run() {
 			System.out.println("Running " +  threadName );
 			try {
 				long startTime = System.nanoTime();
-				
-//				double rmsEnergy = TemporalFeatureExtraction.computeRMSE(samples);
-//				System.out.println("RMSE - " + rmsEnergy);
-//				
-//				if (rmsEnergy < 0.01)
-//					System.out.println("Silence ...");
-//				else {
-//					System.out.println("Extracting features ...");
-//					AERFeatureExtraction fe = new AERFeatureExtraction();
-//					double[] features = fe.extractFeature(samples);
-//					
-//					System.out.println("Classifying label ...");
-//					WekaClassification classifier = new WekaClassification();
-//					classifier.loadModel("F:\\smo1.model");
-//					int labelIndex = classifier.classify(features);
-//					System.out.println("Classified label index: " + labelIndex);
-//					System.out.println("Classified label: " + LABELS[labelIndex]);
-//				}
 				
 				SensoryData sd = new SensoryData();
 				sd.setAudioData(samples);
@@ -90,7 +72,6 @@ public class AER_Server {
 		}
 		   
 		public void start() {
-			System.out.println("Starting " + threadName);
 			if (t == null) {
 				t = new Thread(this, threadName);
 				t.start();

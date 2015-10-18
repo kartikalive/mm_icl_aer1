@@ -17,7 +17,7 @@ public class AudioEmotionRecognizer extends EmotionRecognizer{
 	private static final String[] LABELS = {"ANGER", "HAPPINESS", "SADNESS", "NEUTRAL"};
 	private static final double SILENCE_THRESHOLD = 0.01; 
 	
-	private static final String DEFAULT_MODEL_FILE = "F:\\smo1.model";
+	private static final String DEFAULT_MODEL_FILE = new java.io.File("").getAbsolutePath() + "/model/smo1.model";
 	
 	private String modelFile;
 	
