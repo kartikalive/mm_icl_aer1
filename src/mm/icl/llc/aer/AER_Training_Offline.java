@@ -3,12 +3,15 @@ package mm.icl.llc.aer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import mm.icl.llc.MachineLearningTools.Classifications.WekaClassification;
 import mm.icl.llc.MachineLearningTools.FeatureExtractions.TemporalFeatureExtraction;
 import mm.icl.llc.MachineLearningTools.Utilities.WavFile;
 import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
+import weka.classifiers.functions.supportVector.PolyKernel;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -20,12 +23,14 @@ public class AER_Training_Offline {
 	public static void main(String[] args) {
 //		training();
 		
-		long startTime = System.nanoTime(); 
-		testing();
-		long estimatedTime = System.nanoTime() - startTime;
-		System.out.println("Elapsed Time - " + estimatedTime / 1000000 + " ms");
+//		long startTime = System.nanoTime(); 
+//		testing();
+//		long estimatedTime = System.nanoTime() - startTime;
+//		System.out.println("Elapsed Time - " + estimatedTime / 1000000 + " ms");
 		
 //		test("F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\BJH\\anger");
+		
+		cv10();
 	}
 	
 	public static void test(String folderPath) {
@@ -70,6 +75,81 @@ public class AER_Training_Offline {
 		}
 	}
 	
+	public static void cv10() {
+		try {
+			System.out.println("MINING MIND - INFORMATION CURATION LAYER - AUDIO BASED EMOTION RECOGNITION");
+			System.out.println("EVALUATING");
+			
+			System.out.println("Loading data ...");
+			List<double[]> listFeatures = new ArrayList<double[]>();
+			
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\BJH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\BJH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\BJH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\BJH\\neutral", 3);
+		    
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\CSH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\CSH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\CSH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\CSH\\neutral", 3);
+		    
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\HTH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\HTH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\HTH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\HTH\\neutral", 3);
+
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kang\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kang\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kang\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kang\\neutral", 3);
+		    
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimJH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimJH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimJH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimJH\\neutral", 3);
+		    
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimSan\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimSan\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimSan\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimSan\\neutral", 3);
+		    
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KMH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KMH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KMH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KMH\\neutral", 3);
+		    
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kong\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kong\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kong\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kong\\neutral", 3);
+		    
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\SJH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\SJH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\SJH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\SJH\\neutral", 3);
+		    
+			System.out.println("Evaluating ...");
+			
+			Instances instances = createInstances(listFeatures);
+			
+			SMO smo = new SMO();
+			PolyKernel k = (PolyKernel)smo.getKernel();
+			k.setExponent(4.0);
+			smo.setKernel(k);
+			
+			// 10-fold cross validation
+			Evaluation eval = new Evaluation(instances);
+			eval.crossValidateModel(smo, instances, 10, new Random(2));
+			
+			System.out.println("Error: " + eval.toSummaryString());
+			
+			System.out.println("Done");
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	public static void training() {
 		try {
 			System.out.println("MINING MIND - INFORMATION CURATION LAYER - AUDIO BASED EMOTION RECOGNITION");
@@ -78,50 +158,50 @@ public class AER_Training_Offline {
 			System.out.println("Loading data ...");
 			List<double[]> listFeatures = new ArrayList<double[]>();
 			
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\BJH\\anger", 0);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\BJH\\happiness", 1);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\BJH\\sadness", 2);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\BJH\\neutral", 3);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\BJH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\BJH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\BJH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\BJH\\neutral", 3);
 		    
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\CSH\\anger", 0);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\CSH\\happiness", 1);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\CSH\\sadness", 2);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\CSH\\neutral", 3);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\CSH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\CSH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\CSH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\CSH\\neutral", 3);
 		    
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\HTH\\anger", 0);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\HTH\\happiness", 1);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\HTH\\sadness", 2);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\HTH\\neutral", 3);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\HTH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\HTH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\HTH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\HTH\\neutral", 3);
 
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\Kang\\anger", 0);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\Kang\\happiness", 1);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\Kang\\sadness", 2);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\Kang\\neutral", 3);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kang\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kang\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kang\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kang\\neutral", 3);
 		    
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KimJH\\anger", 0);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KimJH\\happiness", 1);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KimJH\\sadness", 2);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KimJH\\neutral", 3);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimJH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimJH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimJH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimJH\\neutral", 3);
 		    
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KimSan\\anger", 0);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KimSan\\happiness", 1);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KimSan\\sadness", 2);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KimSan\\neutral", 3);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimSan\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimSan\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimSan\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KimSan\\neutral", 3);
 		    
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KMH\\anger", 0);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KMH\\happiness", 1);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KMH\\sadness", 2);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\KMH\\neutral", 3);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KMH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KMH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KMH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\KMH\\neutral", 3);
 		    
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\Kong\\anger", 0);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\Kong\\happiness", 1);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\Kong\\sadness", 2);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\Kong\\neutral", 3);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kong\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kong\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kong\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\Kong\\neutral", 3);
 		    
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\SJH\\anger", 0);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\SJH\\happiness", 1);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\SJH\\sadness", 2);
-		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\SJH\\neutral", 3);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\SJH\\anger", 0);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\SJH\\happiness", 1);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\SJH\\sadness", 2);
+		    loadDataFromFolder(listFeatures, "F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04\\SJH\\neutral", 3);
 		    
 			System.out.println("Training model ...");
 			Instances instances = createInstances(listFeatures);
@@ -181,12 +261,6 @@ public class AER_Training_Offline {
 			
 			AERFeatureExtraction fe = new AERFeatureExtraction(labelIndex);
 			double[] features = fe.extractFeature(samples);
-	        
-//			FeatureExtractor featureExtractor = new FeatureExtractor(labelIndex);
-//			featureExtractor.setSamples(samples);
-//			featureExtractor.setSamplingRate(8000);
-//			featureExtractor.extractFeatures();
-//			double[] features = featureExtractor.getFeatures();
 
 			return features;
 		}
