@@ -6,7 +6,7 @@
 package mm.icl.llc.LLCManager;
 
 import java.util.concurrent.ExecutorService;
-import mm.icl.llc.LLC.RecognizedLLC;
+
 import mm.icl.llc.sensorydata.SensoryData;
 
 /**

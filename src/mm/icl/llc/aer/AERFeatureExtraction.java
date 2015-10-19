@@ -23,6 +23,10 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 		this.samplingRate = 8000;
 	}
 	
+	/**
+	 * 
+	 * @param labelIndex
+	 */
 	public AERFeatureExtraction(int labelIndex) {
 		if (labelIndex > -1)
 			this.hasIndex = true;
@@ -69,9 +73,11 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 		// double[] skewness = StatisticalFunctions.computeSkewness2D(matrix, mean, std);
 		// double[] kurtosis = StatisticalFunctions.computeKurtosis2D(matrix, mean, std);
 		
-		// Total features 28 * 4 = 112 features
+		// Total features 28 * 2 = 54 features
 		
+		// Concatenate all features to a vector
 		double[] features = UtilityFunctions.concat(mean, std);
+		
 		if (hasIndex) {
 			features  = Arrays.copyOf(features, features.length + 1);
 			features[features.length - 1] = labelIndex;
@@ -81,6 +87,7 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 	}
 	
 	/**
+	 * 
 	 * @param samplingRate
 	 */
 	public void setSamplingRate(double samplingRate) {

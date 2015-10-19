@@ -12,7 +12,7 @@ import mm.icl.llc.sensorydata.SensoryData;
  *
  * @author lebavui
  */
-public class AudioEmotionRecognizer extends EmotionRecognizer{
+public class AudioEmotionRecognizer extends EmotionRecognizer {
     
 	private static final String[] LABELS = {"ANGER", "HAPPINESS", "SADNESS", "NEUTRAL"};
 	private static final double SILENCE_THRESHOLD = 0.01; 

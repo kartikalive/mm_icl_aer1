@@ -6,8 +6,8 @@
 package mm.icl.llc.LLCRecognizer;
 
 import java.util.List;
+
 import mm.icl.llc.LLC.Activity;
-import mm.icl.llc.LLC.RecognizedLLC;
 import mm.icl.llc.sensorydata.SensoryData;
 
 /**
