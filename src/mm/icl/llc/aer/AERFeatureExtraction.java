@@ -9,6 +9,9 @@ import mm.icl.llc.MachineLearningTools.FeatureExtractions.TemporalFeatureExtract
 import mm.icl.llc.MachineLearningTools.Utilities.UtilityFunctions;
 
 public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> {
+	
+	private static final double DEFAULT_SAMPLING_RATE = 8000;
+	
 	private double samplingRate;
 	
 	private boolean hasIndex;
@@ -20,7 +23,7 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 	public AERFeatureExtraction() {
 		this.hasIndex = false;
 		this.labelIndex = -1;
-		this.samplingRate = 8000;
+		this.samplingRate = DEFAULT_SAMPLING_RATE;
 	}
 	
 	/**
@@ -34,7 +37,7 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 			this.hasIndex = false;
 		
 		this.labelIndex = labelIndex;
-		this.samplingRate = 8000;
+		this.samplingRate = DEFAULT_SAMPLING_RATE;
 	}
 	
 	/**
