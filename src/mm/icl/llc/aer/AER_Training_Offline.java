@@ -8,6 +8,7 @@ import java.util.Random;
 import mm.icl.llc.MachineLearningTools.Classifications.WekaClassification;
 import mm.icl.llc.MachineLearningTools.FeatureExtractions.TemporalFeatureExtraction;
 import mm.icl.llc.MachineLearningTools.Utilities.WavFile;
+import weka.attributeSelection.SVMAttributeEval;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
@@ -31,6 +32,7 @@ public class AER_Training_Offline {
 //		test("F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\BJH\\anger");
 		
 		cv10();
+		
 	}
 	
 	public static void test(String folderPath) {
@@ -132,16 +134,21 @@ public class AER_Training_Offline {
 			
 			Instances instances = createInstances(listFeatures);
 			
-			SMO smo = new SMO();
-			PolyKernel k = (PolyKernel)smo.getKernel();
-			k.setExponent(5.0);
-			smo.setKernel(k);
+			SVMAttributeEval eval = new SVMAttributeEval();
 			
-			// 10-fold cross validation
-			Evaluation eval = new Evaluation(instances);
-			eval.crossValidateModel(smo, instances, 10, new Random(1));
+			eval.buildEvaluator(instances);
+//			System.out.println("Result: " + eval.);
 			
-			System.out.println("Error: " + eval.toSummaryString());
+//			SMO smo = new SMO();
+//			PolyKernel k = (PolyKernel)smo.getKernel();
+//			k.setExponent(5.0);
+//			smo.setKernel(k);
+//			
+//			// 10-fold cross validation
+//			Evaluation eval = new Evaluation(instances);
+//			eval.crossValidateModel(smo, instances, 10, new Random(1));
+			
+//			System.out.println("Error: " + eval.toSummaryString());
 			
 			System.out.println("Done");
 		}
