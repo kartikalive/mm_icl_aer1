@@ -17,7 +17,7 @@ public class AudioEmotionRecognizer extends EmotionRecognizer {
 	private static final String[] LABELS = {"ANGER", "HAPPINESS", "SADNESS", "NEUTRAL"};
 	private static final double SILENCE_THRESHOLD = 0.01; 
 	
-	private static final String DEFAULT_MODEL_FILE = new java.io.File("").getAbsolutePath() + "/model/smo1.model";
+	private static final String DEFAULT_MODEL_FILE = new java.io.File("").getAbsolutePath() + "/model/smo2.model";
 	
 	private String modelFile;
 	
@@ -43,6 +43,7 @@ public class AudioEmotionRecognizer extends EmotionRecognizer {
 				return emotions;
 			} else {
 				AERFeatureExtraction fe = new AERFeatureExtraction();
+				fe.setSamplingRate(44100);
 				double[] features = fe.extractFeature(samples);
 				
 				WekaClassification classifier = new WekaClassification();
