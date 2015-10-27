@@ -11,6 +11,7 @@ import mm.icl.llc.MachineLearningTools.Utilities.WavFile;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.SMO;
+import weka.classifiers.functions.supportVector.PolyKernel;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -22,14 +23,14 @@ public class AER_Training_Offline {
 	public static void main(String[] args) {
 //		training();
 		
-		long startTime = System.nanoTime(); 
-		testing();
-		long estimatedTime = System.nanoTime() - startTime;
-		System.out.println("Elapsed Time - " + estimatedTime / 1000000 + " ms");
+//		long startTime = System.nanoTime(); 
+//		testing();
+//		long estimatedTime = System.nanoTime() - startTime;
+//		System.out.println("Elapsed Time - " + estimatedTime / 1000000 + " ms");
 		
 //		test("F:\\Le_Ba_Vui\\Working\\MiningMind\\mmdata_04\\BJH\\anger");
 		
-//		cv10();
+		cv10();
 		
 	}
 	
@@ -64,7 +65,7 @@ public class AER_Training_Offline {
 			
 			System.out.println("Classifying label ...");
 			WekaClassification classifier = new WekaClassification();
-			classifier.loadModel("F:\\smo2.model");
+			classifier.loadModel("F:\\smo3.model");
 			int labelIndex = classifier.classify(features);
 			System.out.println("Classified label index - " + labelIndex);
 			System.out.println("Classified label - " + LABELS[labelIndex]);
@@ -139,15 +140,16 @@ public class AER_Training_Offline {
 //			System.out.println("Result: " + eval.);
 			
 			SMO smo = new SMO();
-//			PolyKernel k = (PolyKernel)smo.getKernel();
-//			k.setExponent(5.0);
-//			smo.setKernel(k);
+			PolyKernel k = (PolyKernel)smo.getKernel();
+			k.setExponent(7.0);
+			smo.setKernel(k);
 			
 			// 10-fold cross validation
 			Evaluation eval = new Evaluation(instances);
 			eval.crossValidateModel(smo, instances, 10, new Random(1));
 			
 			System.out.println("Error: " + eval.toSummaryString());
+			System.out.println(eval.toMatrixString());
 			
 			System.out.println("Done");
 		}
@@ -215,7 +217,7 @@ public class AER_Training_Offline {
 			smo.buildClassifier(instances);
 			
 			System.out.println("Saving model ...");
-			saveModel(smo, "F:\\smo2.model");
+			saveModel(smo, "F:\\smo3.model");
 			
 			System.out.println("Done");
 		}

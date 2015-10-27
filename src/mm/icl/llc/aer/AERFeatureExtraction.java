@@ -1,9 +1,12 @@
 package mm.icl.llc.aer;
 
+import jAudioFeatureExtractor.AudioFeatures.PowerSpectrum;
+
 import java.util.Arrays;
 
 import mm.icl.llc.MachineLearningTools.FeatureExtraction;
 import mm.icl.llc.MachineLearningTools.FeatureExtractions.AudioFeatureExtraction;
+import mm.icl.llc.MachineLearningTools.FeatureExtractions.SpectrumFeatureExtraction;
 import mm.icl.llc.MachineLearningTools.FeatureExtractions.StatisticalFunctions;
 import mm.icl.llc.MachineLearningTools.FeatureExtractions.TemporalFeatureExtraction;
 import mm.icl.llc.MachineLearningTools.Utilities.UtilityFunctions;
@@ -61,6 +64,7 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 		for (int i = 0; i < numFrames; i++) {
 			double[] frame = frames[i];
 			double[] mfcc = AudioFeatureExtraction.extractMFCC(frame, samplingRate);
+			double[] ps = SpectrumFeatureExtraction.extractPowerSpectrum(frame, samplingRate);
 			double[] zeroCrossing = TemporalFeatureExtraction.extractZeroCrossings(samples, samplingRate);
 			
 			System.arraycopy(mfcc, 0, matrix[i], 0, mfcc.length);
@@ -69,10 +73,11 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 		
 		// 3. Compute Delta
 		double[][] matrixDelta = computeDelta(matrix); // 14 * 2 = 28 features
+		double[][] matrixDeltaDelta = computeDeltaDelta(matrixDelta); // 14 * 3 = 42 features
 		
 		// 4. Compute Mean, Standard Deviation, Skewness, Kurtosis
-		double[] mean = StatisticalFunctions.computeMean2D(matrixDelta);
-		double[] std = StatisticalFunctions.computeStd2D(matrixDelta, mean);
+		double[] mean = StatisticalFunctions.computeMean2D(matrixDeltaDelta);
+		double[] std = StatisticalFunctions.computeStd2D(matrixDeltaDelta, mean);
 		// double[] skewness = StatisticalFunctions.computeSkewness2D(matrix, mean, std);
 		// double[] kurtosis = StatisticalFunctions.computeKurtosis2D(matrix, mean, std);
 		
@@ -145,6 +150,27 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 		for (int i = 0; i < numFeatures; i++)
 			for (int j = 0; j < numFrames - 1; j++)
 					newMatrix[j][numFeatures + i] = matrix[j+1][i] - matrix[j][i];
+		
+		return newMatrix;
+	}
+	
+	protected double[][] computeDeltaDelta(double[][] matrix) {
+		int numFeatures = matrix[0].length / 2;
+		int numFrames = matrix.length;
+		
+		double[][] newMatrix = new double[numFrames][numFeatures * 3];
+		
+		for (int i = 0; i < numFeatures * 3; i++)
+			for (int j = 0; j < numFrames; j++)
+				newMatrix[j][i] = 0;
+		
+		for (int i = 0; i < numFeatures * 2; i++)
+			for (int j = 0; j < numFrames; j++)
+				newMatrix[j][i] = matrix[j][i];
+		
+		for (int i = 0; i < numFeatures; i++)
+			for (int j = 0; j < numFrames - 1; j++)
+					newMatrix[j][numFeatures * 2 + i] = matrix[j+1][numFeatures + i] - matrix[j][numFeatures + i];
 		
 		return newMatrix;
 	}
