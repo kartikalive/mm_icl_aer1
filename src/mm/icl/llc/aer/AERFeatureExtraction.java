@@ -1,12 +1,9 @@
 package mm.icl.llc.aer;
 
-import jAudioFeatureExtractor.AudioFeatures.PowerSpectrum;
-
 import java.util.Arrays;
 
 import mm.icl.llc.MachineLearningTools.FeatureExtraction;
 import mm.icl.llc.MachineLearningTools.FeatureExtractions.AudioFeatureExtraction;
-import mm.icl.llc.MachineLearningTools.FeatureExtractions.SpectrumFeatureExtraction;
 import mm.icl.llc.MachineLearningTools.FeatureExtractions.StatisticalFunctions;
 import mm.icl.llc.MachineLearningTools.FeatureExtractions.TemporalFeatureExtraction;
 import mm.icl.llc.MachineLearningTools.Utilities.UtilityFunctions;
@@ -64,7 +61,6 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 		for (int i = 0; i < numFrames; i++) {
 			double[] frame = frames[i];
 			double[] mfcc = AudioFeatureExtraction.extractMFCC(frame, samplingRate);
-			double[] ps = SpectrumFeatureExtraction.extractPowerSpectrum(frame, samplingRate);
 			double[] zeroCrossing = TemporalFeatureExtraction.extractZeroCrossings(samples, samplingRate);
 			
 			System.arraycopy(mfcc, 0, matrix[i], 0, mfcc.length);
