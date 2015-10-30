@@ -1,5 +1,15 @@
 package mm.icl.llc.aer;
 
+import jAudioFeatureExtractor.AudioFeatures.LPC;
+import jAudioFeatureExtractor.AudioFeatures.MFCC;
+import jAudioFeatureExtractor.AudioFeatures.MagnitudeSpectrum;
+import jAudioFeatureExtractor.AudioFeatures.PowerSpectrum;
+import jAudioFeatureExtractor.AudioFeatures.RMS;
+import jAudioFeatureExtractor.AudioFeatures.SpectralCentroid;
+import jAudioFeatureExtractor.AudioFeatures.SpectralRolloffPoint;
+import jAudioFeatureExtractor.AudioFeatures.SpectralVariability;
+import jAudioFeatureExtractor.AudioFeatures.ZeroCrossings;
+
 import java.util.Arrays;
 
 import mm.icl.llc.MachineLearningTools.FeatureExtraction;
@@ -61,7 +71,7 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 		for (int i = 0; i < numFrames; i++) {
 			double[] frame = frames[i];
 			double[] mfcc = AudioFeatureExtraction.extractMFCC(frame, samplingRate);
-			double[] zeroCrossing = TemporalFeatureExtraction.extractZeroCrossings(samples, samplingRate);
+			double[] zeroCrossing = TemporalFeatureExtraction.extractZeroCrossings(frame, samplingRate);
 			
 			System.arraycopy(mfcc, 0, matrix[i], 0, mfcc.length);
 			System.arraycopy(zeroCrossing, 0, matrix[i], mfcc.length, zeroCrossing.length);
@@ -69,11 +79,11 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 		
 		// 3. Compute Delta
 		double[][] matrixDelta = computeDelta(matrix); // 14 * 2 = 28 features
-		double[][] matrixDeltaDelta = computeDeltaDelta(matrixDelta); // 14 * 3 = 42 features
+		// double[][] matrixDeltaDelta = computeDeltaDelta(matrixDelta); // 14 * 3 = 42 features
 		
 		// 4. Compute Mean, Standard Deviation, Skewness, Kurtosis
-		double[] mean = StatisticalFunctions.computeMean2D(matrixDeltaDelta);
-		double[] std = StatisticalFunctions.computeStd2D(matrixDeltaDelta, mean);
+		double[] mean = StatisticalFunctions.computeMean2D(matrixDelta);
+		double[] std = StatisticalFunctions.computeStd2D(matrixDelta, mean);
 		// double[] skewness = StatisticalFunctions.computeSkewness2D(matrix, mean, std);
 		// double[] kurtosis = StatisticalFunctions.computeKurtosis2D(matrix, mean, std);
 		
@@ -88,6 +98,95 @@ public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> 
 		}
 		
 		return features;
+	}
+	
+	public double[] extractFeatureExt(double[] samples) {
+		try {
+			// 1. Split frames
+			double[][] frames = splitFrames(samples);
+			
+			int numFrames = frames.length;
+			int numFeatures = 28;
+			
+			double[][] matrix = new double[numFrames][numFeatures];
+			
+			// 2. Extract features
+			// a. MFCC
+			// b. Zero Crossing
+			// c. Power Spectrum 
+			// d. Concatenate into 1 vector
+			
+			for (int i = 0; i < numFrames; i++) {
+				double[] frame = frames[i];
+				
+				MagnitudeSpectrum ms = new MagnitudeSpectrum();
+				double[] msFeatures = ms.extractFeature(frame, samplingRate, null);
+				double[][] otherFeaturesMagnitudeSpectrum = new double[1][msFeatures.length];
+				for (int j = 0; j < msFeatures.length; j++)
+					otherFeaturesMagnitudeSpectrum[0][j] = msFeatures[j];
+				
+				PowerSpectrum ps = new PowerSpectrum();
+				double[] psFeatures = ps.extractFeature(frame, samplingRate, null);
+				double[][] otherFeaturesPowerSpectrum = new double[1][psFeatures.length];
+				for (int j = 0; j < psFeatures.length; j++)
+					otherFeaturesPowerSpectrum[0][j] = psFeatures[j];
+				
+				MFCC mfcc = new MFCC();		// 13
+				double[] mfccFeatures = mfcc.extractFeature(samples, samplingRate, otherFeaturesMagnitudeSpectrum);
+				
+				LPC lpc = new LPC();		// 10
+				double[] lpcFeatures = lpc.extractFeature(samples, samplingRate, null);
+				
+				ZeroCrossings zc = new ZeroCrossings();			// 1
+				double[] zcFeatures = zc.extractFeature(samples, samplingRate, null);
+				
+				RMS rms = new RMS();		// 1
+				double[] rmsFeatures = rms.extractFeature(samples, samplingRate, null);
+				
+				SpectralCentroid sc = new SpectralCentroid();		// 1
+				double[] scFeatures = sc.extractFeature(samples, samplingRate, otherFeaturesPowerSpectrum);
+				
+				SpectralRolloffPoint srp = new SpectralRolloffPoint();		// 1
+				double[] srpFeatures = srp.extractFeature(samples, samplingRate, otherFeaturesPowerSpectrum);
+				
+				SpectralVariability sv = new SpectralVariability();			// 1
+				double[] svFeatures = sv.extractFeature(samples, samplingRate, otherFeaturesMagnitudeSpectrum);
+				
+				System.arraycopy(mfccFeatures, 0, matrix[i], 0, 13);
+				System.arraycopy(lpcFeatures, 0, matrix[i], 13, 10);
+				System.arraycopy(zcFeatures, 0, matrix[i], 23, 1);
+				System.arraycopy(rmsFeatures, 0, matrix[i], 24, 1);
+				System.arraycopy(scFeatures, 0, matrix[i], 25, 1);
+				System.arraycopy(srpFeatures, 0, matrix[i], 26, 1);
+				System.arraycopy(svFeatures, 0, matrix[i], 27, 1);
+			}
+			
+			// 3. Compute Delta
+			double[][] matrixDelta = computeDelta(matrix); // 14 * 2 = 28 features
+			// double[][] matrixDeltaDelta = computeDeltaDelta(matrixDelta); // 14 * 3 = 42 features
+			
+			// 4. Compute Mean, Standard Deviation, Skewness, Kurtosis
+			double[] mean = StatisticalFunctions.computeMean2D(matrixDelta);
+			double[] std = StatisticalFunctions.computeStd2D(matrixDelta, mean);
+			// double[] skewness = StatisticalFunctions.computeSkewness2D(matrix, mean, std);
+			// double[] kurtosis = StatisticalFunctions.computeKurtosis2D(matrix, mean, std);
+			
+			// Total features 28 * 2 = 54 features
+			
+			// Concatenate all features to a vector
+			double[] features = UtilityFunctions.concat(mean, std);
+			
+			if (hasIndex) {
+				features  = Arrays.copyOf(features, features.length + 1);
+				features[features.length - 1] = labelIndex;
+			}
+			
+			return features;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	/**

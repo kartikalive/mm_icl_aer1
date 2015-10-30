@@ -1,5 +1,16 @@
 package mm.icl.llc.aer;
 
+import jAudioFeatureExtractor.AudioFeatures.Compactness;
+import jAudioFeatureExtractor.AudioFeatures.LPC;
+import jAudioFeatureExtractor.AudioFeatures.MFCC;
+import jAudioFeatureExtractor.AudioFeatures.MagnitudeSpectrum;
+import jAudioFeatureExtractor.AudioFeatures.PowerSpectrum;
+import jAudioFeatureExtractor.AudioFeatures.RMS;
+import jAudioFeatureExtractor.AudioFeatures.SpectralCentroid;
+import jAudioFeatureExtractor.AudioFeatures.SpectralFlux;
+import jAudioFeatureExtractor.AudioFeatures.SpectralRolloffPoint;
+import jAudioFeatureExtractor.AudioFeatures.SpectralVariability;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +43,105 @@ public class AER_Training_Offline {
 		
 		cv10();
 		
+//		test();
+		
+	}
+	
+	public static void test() {
+		try {
+			double[] samples = readSamplesFromWav("F:\\Le_Ba_Vui\\Working\\MiningMind\\Data\\mmdata_04_44k\\BJH\\anger\\Jaehun1_2015_09_18_15_06_27.731.wav");
+			double sampling_rate = 44100;
+			
+			// MFCC
+			MagnitudeSpectrum ms = new MagnitudeSpectrum();
+			double[] msFeatures = ms.extractFeature(samples, sampling_rate, null);
+			double[][] otherFeatures = new double[1][msFeatures.length];
+			for (int i = 0; i < msFeatures.length; i++)
+				otherFeatures[0][i] = msFeatures[i];
+			
+			System.out.println("MFCC");
+			MFCC mfcc = new MFCC();
+			double[] mfccFeatures = mfcc.extractFeature(samples, sampling_rate, otherFeatures);
+			System.out.println("Number of Dependency: " + mfcc.getDepenedencies().length);
+			System.out.println("Dependency: " + mfcc.getDepenedencies()[0]);
+			System.out.println("Length: " + mfccFeatures.length);
+			
+			// SpectralCentroid
+			PowerSpectrum ps = new PowerSpectrum();
+			double[] psFeatures = ps.extractFeature(samples, sampling_rate, null);
+			otherFeatures = new double[1][psFeatures.length];
+			for (int i = 0; i < psFeatures.length; i++)
+				otherFeatures[0][i] = psFeatures[i];
+			
+			System.out.println("SpectralCentroid");
+			SpectralCentroid sc = new SpectralCentroid();
+			double[] scFeatures = sc.extractFeature(samples, sampling_rate, otherFeatures);
+			System.out.println("Number of Dependency: " + sc.getDepenedencies().length);
+			System.out.println("Dependency: " + sc.getDepenedencies()[0]);
+			System.out.println("Length: " + scFeatures.length);
+			
+			// SpectralFlux
+			otherFeatures = new double[2][msFeatures.length];
+			for (int i = 0; i < msFeatures.length; i++) {
+				otherFeatures[0][i] = msFeatures[i];
+				otherFeatures[1][i] = msFeatures[i];
+			}
+			
+			System.out.println("SpectralFlux");
+			SpectralFlux sf = new SpectralFlux();
+			double[] sfFeatures = sf.extractFeature(samples, sampling_rate, otherFeatures);
+			System.out.println("Number of Dependency: " + sf.getDepenedencies().length);
+			System.out.println("Dependency: " + sf.getDepenedencies()[0]);
+			System.out.println("Dependency: " + sf.getDepenedencies()[1]);
+			System.out.println("Length: " + sfFeatures.length);
+			
+			// SpectralRolloffPoint
+			otherFeatures = new double[1][psFeatures.length];
+			for (int i = 0; i < psFeatures.length; i++)
+				otherFeatures[0][i] = psFeatures[i];
+			
+			System.out.println("SpectralRolloffPoint");
+			SpectralRolloffPoint srp = new SpectralRolloffPoint();
+			double[] srpFeatures = srp.extractFeature(samples, sampling_rate, otherFeatures);
+			System.out.println("Number of Dependency: " + srp.getDepenedencies().length);
+			System.out.println("Dependency: " + srp.getDepenedencies()[0]);
+			System.out.println("Length: " + srpFeatures.length);
+			
+			// SpectralVariability
+			otherFeatures = new double[1][msFeatures.length];
+			for (int i = 0; i < msFeatures.length; i++)
+				otherFeatures[0][i] = msFeatures[i];
+			
+			System.out.println("SpectralVariability");
+			SpectralVariability sv = new SpectralVariability();
+			double[] svFeatures = sv.extractFeature(samples, sampling_rate, otherFeatures);
+			System.out.println("Number of Dependency: " + sv.getDepenedencies().length);
+			System.out.println("Dependency: " + sv.getDepenedencies()[0]);
+			System.out.println("Length: " + svFeatures.length);
+			
+			// Compactness
+			System.out.println("Compactness");
+			Compactness cp = new Compactness();
+			double[] cpFeatures = cp.extractFeature(samples, sampling_rate, otherFeatures);
+			System.out.println("Number of Dependency: " + cp.getDepenedencies().length);
+			System.out.println("Dependency: " + cp.getDepenedencies()[0]);
+			System.out.println("Length: " + cpFeatures.length);
+			
+			// LPC
+			System.out.println("LPC");
+			LPC lpc = new LPC();
+			double[] lpcFeatures = lpc.extractFeature(samples, sampling_rate, null);
+			System.out.println("Length: " + lpcFeatures.length);
+		
+			// Root Mean Square
+			System.out.println("RMS");
+			RMS rms = new RMS();
+			double[] rmsFeatures = rms.extractFeature(samples, sampling_rate, null);
+			System.out.println("Length: " + rmsFeatures.length);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 	public static void test(String folderPath) {
@@ -141,7 +251,7 @@ public class AER_Training_Offline {
 			
 			SMO smo = new SMO();
 			PolyKernel k = (PolyKernel)smo.getKernel();
-			k.setExponent(7.0);
+			k.setExponent(5.0);
 			smo.setKernel(k);
 			
 			// 10-fold cross validation
@@ -276,7 +386,7 @@ public class AER_Training_Offline {
 	        
 			AERFeatureExtraction fe = new AERFeatureExtraction(labelIndex);
 			fe.setSamplingRate(44100);
-			double[] features = fe.extractFeature(samples);
+			double[] features = fe.extractFeatureExt(samples);
 
 			return features;
 		}
