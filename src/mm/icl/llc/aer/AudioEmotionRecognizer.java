@@ -14,10 +14,10 @@ import mm.icl.llc.sensorydata.SensoryData;
  */
 public class AudioEmotionRecognizer extends EmotionRecognizer {
     
-	private static final String[] LABELS = {"ANGER", "HAPPINESS", "SADNESS", "NEUTRAL"};
-	private static final double SILENCE_THRESHOLD = 0.01; 
+	private static final String[] LABELS = {"Anger", "Happiness", "Sadness"};
+	private static final double SILENCE_THRESHOLD = 0.001; 
 	
-	private static final String DEFAULT_MODEL_FILE = new java.io.File("").getAbsolutePath() + "/model/smo2.model";
+	private static final String DEFAULT_MODEL_FILE = new java.io.File("").getAbsolutePath() + "/model/smo3emotions.model";
 	
 	private String modelFile;
 	
@@ -37,7 +37,7 @@ public class AudioEmotionRecognizer extends EmotionRecognizer {
 	    	double rmsEnergy = TemporalFeatureExtraction.computeRMSE(samples);
 			
 			if (rmsEnergy < SILENCE_THRESHOLD) {
-				AudioEmotion classifiedEmotion = new AudioEmotion("SILENCE");
+				AudioEmotion classifiedEmotion = new AudioEmotion("UndefinedEmotion");
 				ArrayList<Emotion> emotions = new ArrayList<Emotion>();
 				emotions.add(classifiedEmotion);
 				return emotions;

@@ -22,7 +22,7 @@ public class AER_Server {
                 try {
                 	DataInputStream in = new DataInputStream(s.getInputStream());
                 	int len = in.readInt();
-                	System.out.println("Data length: " + len);
+                	// System.out.println("Data length: " + len);
                 	double[] samples = new double[len];
                 	for(int i = 0; i < len; i++)
                 		samples[i] = in.readDouble();
@@ -51,23 +51,33 @@ public class AER_Server {
 		}
 		   
 		public void run() {
-			System.out.println("Running " +  threadName );
+			// System.out.println("Running " +  threadName );
 			try {
-				long startTime = System.nanoTime();
+//				long startTime = System.nanoTime();
 				
 				SensoryData sd = new SensoryData();
 				sd.setAudioData(samples);
 				AudioEmotionRecognizer aer = new AudioEmotionRecognizer();
 				List<Emotion> emotions = aer.recognize(sd);
-				System.out.println("Classified label: " + emotions.get(0).toString());
+				String recognizedLabel = emotions.get(0).toString();
+				System.out.println("Classified label: " + recognizedLabel);
 				
-				long estimatedTime = System.nanoTime() - startTime;
-				System.out.println("Elapsed Time - " + estimatedTime / 1000000 + " ms");
+				if (recognizedLabel.equals("ANGER"))
+					System.out.println("Classified Index: 1");
+				else if (recognizedLabel.equals("HAPPINESS"))
+					System.out.println("Classified Index: 2");
+				else if (recognizedLabel.equals("NEUTRAL"))
+					System.out.println("Classified Index: 3");
+				else if (recognizedLabel.equals("SADNESS"))
+					System.out.println("Classified Index: 4");
+				
+//				long estimatedTime = System.nanoTime() - startTime;
+				// System.out.println("Elapsed Time - " + estimatedTime / 1000000 + " ms");
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			System.out.println("Thread " +  threadName + " exiting.");
+			// System.out.println("Thread " +  threadName + " exiting.");
 			System.out.println("----------------------------------------");
 		}
 		   

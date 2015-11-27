@@ -10,7 +10,7 @@ import mm.icl.llc.MachineLearningTools.Utilities.UtilityFunctions;
 
 public class AERFeatureExtraction extends FeatureExtraction<double[], double[]> {
 	
-	private static final double DEFAULT_SAMPLING_RATE = 8000;
+	private static final double DEFAULT_SAMPLING_RATE = 44100;
 	
 	private double samplingRate;
 	
