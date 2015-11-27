@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mm.icl.llc.sensorydata;
 
-/**
- *
- * @author Nailbrainz
- */
 public class SensoryData {
     private double[] audioData;
 
@@ -20,5 +11,11 @@ public class SensoryData {
 		this.audioData = audioData;
 	}
     
-    
+	public void setAudioDataFromByteArray(byte[] data) {
+		int dataLength = data.length / 2;
+		audioData = new double[dataLength];
+		for (int i = 0; i < dataLength; i++) {
+			audioData[i] = (data[i * 2] + data[i * 2 + 1] * 256) / 32768;
+		}
+	}
 }
