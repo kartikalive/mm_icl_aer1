@@ -15,7 +15,7 @@ public class SensoryData {
 		int dataLength = data.length / 2;
 		audioData = new double[dataLength];
 		for (int i = 0; i < dataLength; i++) {
-			audioData[i] = (data[i * 2] + data[i * 2 + 1] * 256) / 32768;
+			audioData[i] = (double)(data[i * 2] + data[i * 2 + 1] * 256) / 32768.0;
 		}
 	}
 }
