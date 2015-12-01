@@ -1,7 +1,7 @@
 package mm.icl.llc.aer;
 
-import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -20,15 +20,8 @@ public class AER_Server {
             while (true) {
                 Socket s = listener.accept();
                 try {
-                	DataInputStream in = new DataInputStream(s.getInputStream());
-                	int len = in.readInt();
-                	// System.out.println("Data length: " + len);
-                	double[] samples = new double[len];
-                	for(int i = 0; i < len; i++)
-                		samples[i] = in.readDouble();
-                	
                 	n++;
-                	AERThread thread = new AERThread("Thread " + n, samples);
+                	AERThread thread = new AERThread(s, "Thread " + n);
                 	thread.start();
                 } finally {
                     s.close();
@@ -43,10 +36,10 @@ public class AER_Server {
 	static class AERThread implements Runnable {
 		private Thread t;
 		private String threadName;
-		private double[] samples;
-		   
-		public AERThread(String name, double[] samples) {
-			this.samples = samples;
+		private Socket socket; 
+		
+		public AERThread(Socket socket, String name) {
+			this.socket = socket;
 		    this.threadName = name;
 		}
 		   
@@ -55,8 +48,8 @@ public class AER_Server {
 			try {
 //				long startTime = System.nanoTime();
 				
-				SensoryData sd = new SensoryData();
-				sd.setAudioData(samples);
+				SensoryData sd = (SensoryData) (new ObjectInputStream(socket.getInputStream()).readObject());
+				
 				AudioEmotionRecognizer aer = new AudioEmotionRecognizer();
 				List<Emotion> emotions = aer.recognize(sd);
 				String recognizedLabel = emotions.get(0).toString();

@@ -1,21 +1,40 @@
 package mm.icl.llc.sensorydata;
 
-public class SensoryData {
-    private double[] audioData;
+import java.io.Serializable;
 
-	public double[] getAudioData() {
-		return audioData;
-	}
+import mm.icl.llc.config.DataType;
 
-	public void setAudioData(double[] audioData) {
-		this.audioData = audioData;
-	}
+public class SensoryData implements Serializable {
     
-	public void setAudioDataFromByteArray(byte[] data) {
-		int dataLength = data.length / 2;
-		audioData = new double[dataLength];
-		for (int i = 0; i < dataLength; i++) {
-			audioData[i] = (double)(data[i * 2] + data[i * 2 + 1] * 256) / 32768.0;
-		}
-	}
+	private static final long serialVersionUID = 1L;
+	Long userID;
+    byte[] data;
+
+    public Long getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
+    
+    public SensoryData() {
+        availTable[0] = true;
+        availTable[1] = false;
+        availTable[2] = true;
+    }
+    
+    boolean availTable[] = new boolean[DataType.values().length];
+    
+    public boolean[] getAvailTable(){
+        return availTable;
+    }
+    
+    public void setAudioSensoryData(byte[] data){
+    	this.data = data;
+    }
+    
+    public byte[] getAudioSensoryData(){
+    	return data;
+    }
 }

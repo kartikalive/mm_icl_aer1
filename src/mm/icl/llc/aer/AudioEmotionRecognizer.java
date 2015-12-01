@@ -32,34 +32,50 @@ public class AudioEmotionRecognizer extends EmotionRecognizer {
     @Override
     public List<Emotion> recognize(SensoryData input) {
     	try {
-    		double[] samples = input.getAudioData();
-    		
-	    	double rmsEnergy = TemporalFeatureExtraction.computeRMSE(samples);
-			
-			if (rmsEnergy < SILENCE_THRESHOLD) {
-				AudioEmotion classifiedEmotion = new AudioEmotion("UndefinedEmotion");
+    		double[] samples = getAudioData(input.getAudioSensoryData());
+    		if (samples == null) {
+    			AudioEmotion classifiedEmotion = new AudioEmotion("UndefinedEmotion");
 				ArrayList<Emotion> emotions = new ArrayList<Emotion>();
 				emotions.add(classifiedEmotion);
 				return emotions;
-			} else {
-				AERFeatureExtraction fe = new AERFeatureExtraction();
-				fe.setSamplingRate(44100);
-				double[] features = fe.extractFeature(samples);
+    		} else {
+	    		double rmsEnergy = TemporalFeatureExtraction.computeRMSE(samples);
 				
-				WekaClassification classifier = new WekaClassification();
-				classifier.loadModel(modelFile);
-				int labelIndex = classifier.classify(features);
-				
-				AudioEmotion classifiedEmotion = new AudioEmotion(LABELS[labelIndex]);
-				ArrayList<Emotion> emotions = new ArrayList<Emotion>();
-				emotions.add(classifiedEmotion);
-				
-				return emotions;
-			}
+				if (rmsEnergy < SILENCE_THRESHOLD) {
+					AudioEmotion classifiedEmotion = new AudioEmotion("UndefinedEmotion");
+					ArrayList<Emotion> emotions = new ArrayList<Emotion>();
+					emotions.add(classifiedEmotion);
+					return emotions;
+				} else {
+					AERFeatureExtraction fe = new AERFeatureExtraction();
+					fe.setSamplingRate(44100);
+					double[] features = fe.extractFeature(samples);
+					
+					WekaClassification classifier = new WekaClassification();
+					classifier.loadModel(modelFile);
+					int labelIndex = classifier.classify(features);
+					
+					AudioEmotion classifiedEmotion = new AudioEmotion(LABELS[labelIndex]);
+					ArrayList<Emotion> emotions = new ArrayList<Emotion>();
+					emotions.add(classifiedEmotion);
+					
+					return emotions;
+				}
+    		}
     	} catch (Exception ex) {
     		ex.printStackTrace();
     	}
     	return null;
     }
     
+    private double[] getAudioData(byte[] wavData) {
+    	if (wavData.length <= 44)
+    		return null;
+    	
+    	int length = (wavData.length - 44) / 2;
+    	double[] samples = new double[length];
+    	for (int i = 0; i < length; i++)
+    		samples[i] = ((wavData[44 + i * 2] & 0xFF) + wavData[44 + i * 2 + 1] * 256) / 32768.0;
+    	return samples;
+    }
 }
